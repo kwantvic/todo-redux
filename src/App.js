@@ -4,15 +4,14 @@ import { AddField } from './components/AddField';
 import { Item } from './components/Item';
 
 function reducer(state, action) {
-  console.log(state.length, '🩸myTest🧩');
   switch (action.type) {
     case 'ADD_TASK': {
       return [
         ...state,
         {
-          id: `${state.length + 1}`,
-          text: action.textNewTask,
-          completed: action.completedNewTask,
+          id: state[state.length - 1].id + 1,
+          text: action.payload.text,
+          completed: action.payload.completed,
         },
       ];
     }
@@ -29,29 +28,14 @@ function App() {
     },
   ]);
 
-  const [completedNewTask, setCompletedNewTask] = React.useState(false);
-  const [textNewTask, setTextNewTask] = React.useState('');
-
-  function onChangeCompleted() {
-    setCompletedNewTask(!completedNewTask);
-  }
-
-  function onChangeInput(text) {
-    setTextNewTask(text);
-  }
-
-  function clickAddNewTask() {
-    if (textNewTask.trim()) {
-      dispatch({
-        type: 'ADD_TASK',
-        textNewTask: textNewTask,
-        completedNewTask: completedNewTask,
-      });
-      setCompletedNewTask(false);
-      setTextNewTask('');
-    } else {
-      alert('❌Введите текст задачи❗️');
-    }
+  function onAddTask(completedNewTask, textNewTask) {
+    dispatch({
+      type: 'ADD_TASK',
+      payload: {
+        text: textNewTask,
+        completed: completedNewTask,
+      },
+    });
   }
 
   return (
@@ -60,13 +44,7 @@ function App() {
         <Paper className="header" elevation={0}>
           <h4>Список задач</h4>
         </Paper>
-        <AddField
-          onChangeCompleted={onChangeCompleted}
-          onChangeInput={onChangeInput}
-          clickAddNewTask={clickAddNewTask}
-          completedNewTask={completedNewTask}
-          textNewTask={textNewTask}
-        />
+        <AddField onAdd={onAddTask} />
         <Divider />
         <Tabs value={0}>
           <Tab label="Все" />
