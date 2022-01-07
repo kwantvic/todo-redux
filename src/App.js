@@ -15,6 +15,10 @@ function reducer(state, action) {
         },
       ];
     }
+    case 'REMOVE_TASK': {
+      const newState = state.filter((item) => item.id !== action.payload.id);
+      return newState;
+    }
   }
   return state;
 }
@@ -38,6 +42,15 @@ function App() {
     });
   }
 
+  function onDelTask(idTask) {
+    dispatch({
+      type: 'REMOVE_TASK',
+      payload: {
+        id: idTask,
+      },
+    });
+  }
+
   return (
     <div className="App">
       <Paper className="wrapper">
@@ -54,7 +67,13 @@ function App() {
         <Divider />
         <List>
           {state.map((obj) => (
-            <Item key={obj.id} text={obj.text} completed={obj.completed} />
+            <Item
+              key={obj.id}
+              text={obj.text}
+              completed={obj.completed}
+              id={obj.id}
+              onDel={onDelTask}
+            />
           ))}
         </List>
         <Divider />
