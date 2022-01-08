@@ -6,10 +6,10 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-export const Item = ({ text, completed, id, onDel }) => {
-  function clickRemoveTask() {
+export const Item = ({ text, completed, onClickRemove }) => {
+  function onClickRemoveTask() {
     if (window.confirm('❗️Вы действителоьно хотите удалить задачу?')) {
-      onDel(id);
+      onClickRemove();
     }
   }
   return (
@@ -25,7 +25,7 @@ export const Item = ({ text, completed, id, onDel }) => {
           <IconButton>
             <EditIcon style={{ fontSize: 20 }} />
           </IconButton>
-          <IconButton onClick={clickRemoveTask}>
+          <IconButton onClick={onClickRemoveTask}>
             <DeleteOutlineIcon style={{ fontSize: 20 }} />
           </IconButton>
         </div>
