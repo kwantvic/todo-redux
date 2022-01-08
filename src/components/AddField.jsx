@@ -4,13 +4,13 @@ import AddIcon from '@mui/icons-material/Add';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-export const AddField = ({ onAdd }) => {
+export const AddField = ({ onClickAdd }) => {
   const [completedNewTask, setCompletedNewTask] = React.useState(false);
   const [textNewTask, setTextNewTask] = React.useState('');
 
   function clickAddNewTask() {
     if (textNewTask.trim()) {
-      onAdd(completedNewTask, textNewTask);
+      onClickAdd(completedNewTask, textNewTask);
       setCompletedNewTask(false);
       setTextNewTask('');
     } else {

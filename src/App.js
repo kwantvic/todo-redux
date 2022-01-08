@@ -15,6 +15,9 @@ function reducer(state, action) {
         },
       ];
     }
+    case 'REMOVE_TASK': {
+      return state.filter((item) => item.id !== action.payload.id);
+    }
   }
   return state;
 }
@@ -38,13 +41,22 @@ function App() {
     });
   }
 
+  function onDelTask(idTask) {
+    dispatch({
+      type: 'REMOVE_TASK',
+      payload: {
+        id: idTask,
+      },
+    });
+  }
+
   return (
     <div className="App">
       <Paper className="wrapper">
         <Paper className="header" elevation={0}>
           <h4>Список задач</h4>
         </Paper>
-        <AddField onAdd={onAddTask} />
+        <AddField onClickAdd={onAddTask} />
         <Divider />
         <Tabs value={0}>
           <Tab label="Все" />
@@ -54,7 +66,12 @@ function App() {
         <Divider />
         <List>
           {state.map((obj) => (
-            <Item key={obj.id} text={obj.text} completed={obj.completed} />
+            <Item
+              key={obj.id}
+              text={obj.text}
+              completed={obj.completed}
+              onClickRemove={() => onDelTask(obj.id)}
+            />
           ))}
         </List>
         <Divider />
