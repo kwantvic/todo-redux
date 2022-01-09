@@ -6,13 +6,10 @@ import { Item } from './components/Item';
 function reducer(state, action) {
   switch (action.type) {
     case 'ADD_TASK': {
-      function generateNewId(state) {
-        return state.length ? state[state.length - 1].id + 1 : 1;
-      }
       return [
         ...state,
         {
-          id: generateNewId(state),
+          id: state.length ? state[state.length - 1].id + 1 : 1,
           text: action.payload.text,
           completed: action.payload.completed,
         },
@@ -21,35 +18,40 @@ function reducer(state, action) {
     case 'REMOVE_TASK': {
       return state.filter((item) => item.id !== action.payload.id);
     }
+    case 'EDIT_TASK': {
+      return state.map((obj) =>
+        obj.id === action.payload.id
+          ? {
+              ...obj,
+              text: action.payload.text,
+            }
+          : obj,
+      );
+    }
     case 'TOGGLE_COMPLETED': {
-      return state.map((obj) => {
-        if (obj.id === action.payload.id) {
-          return {
-            ...obj,
-            completed: !obj.completed,
-          };
-        }
-        return obj;
-      });
+      return state.map((obj) =>
+        obj.id === action.payload.id
+          ? {
+              ...obj,
+              completed: !obj.completed,
+            }
+          : obj,
+      );
     }
     case 'REMOVE_ALL': {
       return [];
     }
     case 'SELECT_ALL': {
-      return state.map((obj) => {
-        return {
-          ...obj,
-          completed: true,
-        };
-      });
+      return state.map((obj) => ({
+        ...obj,
+        completed: true,
+      }));
     }
-    case 'SELECT_NOTHING': {
-      return state.map((obj) => {
-        return {
-          ...obj,
-          completed: false,
-        };
-      });
+    case 'DESELECT_ALL': {
+      return state.map((obj) => ({
+        ...obj,
+        completed: false,
+      }));
     }
   }
   return state;
@@ -63,7 +65,7 @@ function App() {
 
   React.useEffect(() => {
     if (state.length) {
-      setToggleBtn(state.map((obj) => obj.completed).includes(false));
+      setToggleBtn(!state.every((obj) => obj.completed));
     }
   }, [state]);
 
@@ -104,15 +106,22 @@ function App() {
   }
 
   function onSelect() {
-    if (isToggleBtn) {
-      dispatch({
-        type: 'SELECT_ALL',
-      });
-    } else {
-      dispatch({
-        type: 'SELECT_NOTHING',
-      });
-    }
+    dispatch({
+      type: isToggleBtn ? 'SELECT_ALL' : 'DESELECT_ALL',
+    });
+  }
+
+  function onEditTask(idTask) {
+    let newText = window.prompt('Отредактируйте задачу');
+    !newText || !newText.trim()
+      ? alert('❌Задача не отредактирована!')
+      : dispatch({
+          type: 'EDIT_TASK',
+          payload: {
+            id: idTask,
+            text: newText,
+          },
+        });
   }
 
   function getComponentItem(obj) {
@@ -122,17 +131,10 @@ function App() {
         text={obj.text}
         completed={obj.completed}
         onClickRemove={() => onDelTask(obj.id)}
+        onClickEdit={() => onEditTask(obj.id)}
         onClickCheckbox={() => toggleComplete(obj.id)}
       />
     );
-  }
-
-  function isVisibleBtn() {
-    if (state.length) {
-      return false;
-    } else {
-      return true;
-    }
   }
 
   return (
@@ -171,10 +173,10 @@ function App() {
         </List>
         <Divider />
         <div className="check-buttons">
-          <Button onClick={onSelect} disabled={isVisibleBtn()}>
+          <Button onClick={onSelect} disabled={!state.length}>
             {isToggleBtn ? 'Отметить всё' : 'Снять отметки'}
           </Button>
-          <Button onClick={onDelAll} disabled={isVisibleBtn()}>
+          <Button onClick={onDelAll} disabled={!state.length}>
             Очистить
           </Button>
         </div>
