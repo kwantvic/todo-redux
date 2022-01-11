@@ -8,14 +8,7 @@ function App() {
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
 
-  const [isToggleBtn, setToggleBtn] = React.useState(true);
-  const [activeItem, setActiveItem] = React.useState(0);
-
-  React.useEffect(() => {
-    if (state.length) {
-      setToggleBtn(!state.every((obj) => obj.completed));
-    }
-  }, [state]);
+  const [activeItemFilter, setActiveItemFilter] = React.useState(0);
 
   function onAddTask(completedNewTask, textNewTask) {
     dispatch({
@@ -55,7 +48,7 @@ function App() {
 
   function onSelect() {
     dispatch({
-      type: isToggleBtn ? 'SELECT_ALL' : 'DESELECT_ALL',
+      type: isSelectItems() ? 'SELECT_ALL' : 'DESELECT_ALL',
     });
   }
 
@@ -85,6 +78,36 @@ function App() {
     );
   }
 
+  function renderTasks() {
+    return state.map((obj) => {
+      if (activeItemFilter === 0) {
+        return getComponentItem(obj);
+      }
+
+      if (activeItemFilter === 1 && !obj.completed) {
+        return getComponentItem(obj);
+      }
+
+      if (activeItemFilter === 2 && obj.completed) {
+        return getComponentItem(obj);
+      }
+
+      return null;
+    });
+  }
+
+  function isSelectItems() {
+    return !state.every((obj) => obj.completed);
+  }
+
+  function toggleSelectTasksBtn() {
+    if (!isSelectItems() && state.length) {
+      return 'Снять отметки';
+    } else {
+      return 'Отметить всё';
+    }
+  }
+
   return (
     <div className="App">
       <Paper className="wrapper">
@@ -93,36 +116,17 @@ function App() {
         </Paper>
         <AddField onClickAdd={onAddTask} />
         <Divider />
-        <Tabs value={activeItem}>
-          <Tab onClick={() => setActiveItem(0)} label="Все" />
-          <Tab onClick={() => setActiveItem(1)} label="Активные" />
-          <Tab onClick={() => setActiveItem(2)} label="Завершённые" />
+        <Tabs value={activeItemFilter}>
+          <Tab onClick={() => setActiveItemFilter(0)} label="Все" />
+          <Tab onClick={() => setActiveItemFilter(1)} label="Активные" />
+          <Tab onClick={() => setActiveItemFilter(2)} label="Завершённые" />
         </Tabs>
         <Divider />
-        <List>
-          {state.map((obj) => {
-            if (activeItem === 0) {
-              return getComponentItem(obj);
-            }
-            if (activeItem === 1) {
-              if (obj.completed) {
-                return null;
-              } else {
-                return getComponentItem(obj);
-              }
-            } else {
-              if (obj.completed) {
-                return getComponentItem(obj);
-              } else {
-                return null;
-              }
-            }
-          })}
-        </List>
+        <List>{renderTasks()}</List>
         <Divider />
         <div className="check-buttons">
           <Button onClick={onSelect} disabled={!state.length}>
-            {isToggleBtn ? 'Отметить всё' : 'Снять отметки'}
+            {toggleSelectTasksBtn()}
           </Button>
           <Button onClick={onDelAll} disabled={!state.length}>
             Очистить
