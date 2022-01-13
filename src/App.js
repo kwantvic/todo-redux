@@ -1,136 +1,66 @@
 import React from 'react';
-import { Paper, Divider, Button, List, Tabs, Tab } from '@mui/material';
-import { AddField } from './components/AddField';
-import { Item } from './components/Item';
-import { useSelector, useDispatch } from 'react-redux';
+import {Paper, Divider, Button, List, Tabs, Tab} from '@mui/material';
+import {AddField} from './components/AddField';
+import {Item} from './components/Item';
+import {useSelector, useDispatch} from 'react-redux';
+import {Filter} from "./components/Filter";
 
 function App() {
-  const dispatch = useDispatch();
-  const state = useSelector((state) => state);
+    const dispatch = useDispatch();
+    const state = useSelector((state) => state);
 
-  const [isToggleBtn, setToggleBtn] = React.useState(true);
-  const [activeItem, setActiveItem] = React.useState(0);
+    const [isToggleBtn, setToggleBtn] = React.useState(true);
 
-  React.useEffect(() => {
-    if (state.length) {
-      setToggleBtn(!state.every((obj) => obj.completed));
-    }
-  }, [state]);
+    React.useEffect(() => {
+        if (state.length) {
+            setToggleBtn(!state.every((obj) => obj.completed));
+        }
+    }, [state]);
 
-  function onAddTask(completedNewTask, textNewTask) {
-    dispatch({
-      type: 'ADD_TASK',
-      payload: {
-        text: textNewTask,
-        completed: completedNewTask,
-      },
-    });
-  }
-
-  function onDelTask(idTask) {
-    dispatch({
-      type: 'REMOVE_TASK',
-      payload: {
-        id: idTask,
-      },
-    });
-  }
-
-  function toggleComplete(idTask) {
-    dispatch({
-      type: 'TOGGLE_COMPLETED',
-      payload: {
-        id: idTask,
-      },
-    });
-  }
-
-  function onDelAll() {
-    if (window.confirm('❗️Вы действительно хотите удалить все задачи?')) {
-      dispatch({
-        type: 'REMOVE_ALL',
-      });
-    }
-  }
-
-  function onSelect() {
-    dispatch({
-      type: isToggleBtn ? 'SELECT_ALL' : 'DESELECT_ALL',
-    });
-  }
-
-  function onEditTask(idTask) {
-    let newText = window.prompt('Отредактируйте задачу');
-    !newText || !newText.trim()
-      ? alert('❌Задача не отредактирована!')
-      : dispatch({
-          type: 'EDIT_TASK',
-          payload: {
-            id: idTask,
-            text: newText,
-          },
+    function onAddTask(completedNewTask, textNewTask) {
+        dispatch({
+            type: 'ADD_TASK',
+            payload: {
+                text: textNewTask,
+                completed: completedNewTask,
+            },
         });
-  }
+    }
 
-  function getComponentItem(obj) {
+    function onDelAll() {
+        if (window.confirm('❗️Вы действительно хотите удалить все задачи?')) {
+            dispatch({
+                type: 'REMOVE_ALL',
+            });
+        }
+    }
+
+    function onSelect() {
+        dispatch({
+            type: isToggleBtn ? 'SELECT_ALL' : 'DESELECT_ALL',
+        });
+    }
+
+
     return (
-      <Item
-        key={obj.id}
-        text={obj.text}
-        completed={obj.completed}
-        onClickRemove={() => onDelTask(obj.id)}
-        onClickEdit={() => onEditTask(obj.id)}
-        onClickCheckbox={() => toggleComplete(obj.id)}
-      />
-    );
-  }
-
-  return (
-    <div className="App">
-      <Paper className="wrapper">
-        <Paper className="header" elevation={0}>
-          <h4>Список задач</h4>
-        </Paper>
-        <AddField onClickAdd={onAddTask} />
-        <Divider />
-        <Tabs value={activeItem}>
-          <Tab onClick={() => setActiveItem(0)} label="Все" />
-          <Tab onClick={() => setActiveItem(1)} label="Активные" />
-          <Tab onClick={() => setActiveItem(2)} label="Завершённые" />
-        </Tabs>
-        <Divider />
-        <List>
-          {state.map((obj) => {
-            if (activeItem === 0) {
-              return getComponentItem(obj);
-            }
-            if (activeItem === 1) {
-              if (obj.completed) {
-                return null;
-              } else {
-                return getComponentItem(obj);
-              }
-            } else {
-              if (obj.completed) {
-                return getComponentItem(obj);
-              } else {
-                return null;
-              }
-            }
-          })}
-        </List>
-        <Divider />
-        <div className="check-buttons">
-          <Button onClick={onSelect} disabled={!state.length}>
-            {isToggleBtn ? 'Отметить всё' : 'Снять отметки'}
-          </Button>
-          <Button onClick={onDelAll} disabled={!state.length}>
-            Очистить
-          </Button>
+        <div className="App">
+            <Paper className="wrapper">
+                <Paper className="header" elevation={0}>
+                    <h4>Список задач</h4>
+                </Paper>
+                <AddField onClickAdd={onAddTask}/>
+                <Filter/>
+                <div className="check-buttons">
+                    <Button onClick={onSelect} disabled={!state.length}>
+                        {isToggleBtn ? 'Отметить всё' : 'Снять отметки'}
+                    </Button>
+                    <Button onClick={onDelAll} disabled={!state.length}>
+                        Очистить
+                    </Button>
+                </div>
+            </Paper>
         </div>
-      </Paper>
-    </div>
-  );
+    );
 }
 
 export default App;
