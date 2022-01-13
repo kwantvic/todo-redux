@@ -1,7 +1,6 @@
 import React from 'react';
-import {Paper, Divider, Button, List, Tabs, Tab} from '@mui/material';
+import {Paper, Button} from '@mui/material';
 import {AddField} from './components/AddField';
-import {Item} from './components/Item';
 import {useSelector, useDispatch} from 'react-redux';
 import {Filter} from "./components/Filter";
 
