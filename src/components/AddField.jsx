@@ -10,7 +10,7 @@ export const AddField = ({ onClickAdd }) => {
 
   function clickAddNewTask() {
     if (textNewTask.trim()) {
-      onClickAdd(completedNewTask, textNewTask);
+      onClickAdd(textNewTask, completedNewTask);
       setCompletedNewTask(false);
       setTextNewTask('');
     } else {

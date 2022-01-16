@@ -3,43 +3,33 @@ import {Paper, Button} from '@mui/material';
 import {AddField} from './components/AddField';
 import {useSelector, useDispatch} from 'react-redux';
 import {Filter} from "./components/Filter";
+import {addTask, dellAll, select} from "./redux/actions/tasks";
 
 function App() {
     const dispatch = useDispatch();
-    const state = useSelector((state) => state);
+    const tasks = useSelector((state) => state.tasks);
 
     const [isToggleBtn, setToggleBtn] = React.useState(true);
 
     React.useEffect(() => {
-        if (state.length) {
-            setToggleBtn(!state.every((obj) => obj.completed));
+        if (tasks.length) {
+            setToggleBtn(!tasks.every((obj) => obj.completed));
         }
-    }, [state]);
+    }, [tasks]);
 
-    function onAddTask(completedNewTask, textNewTask) {
-        dispatch({
-            type: 'ADD_TASK',
-            payload: {
-                text: textNewTask,
-                completed: completedNewTask,
-            },
-        });
+    function onAddTask(text, completed) {
+        dispatch(addTask(text, completed));
     }
 
     function onDelAll() {
         if (window.confirm('❗️Вы действительно хотите удалить все задачи?')) {
-            dispatch({
-                type: 'REMOVE_ALL',
-            });
+            dispatch(dellAll());
         }
     }
 
-    function onSelect() {
-        dispatch({
-            type: isToggleBtn ? 'SELECT_ALL' : 'DESELECT_ALL',
-        });
+    function onSelect(isToggleBtn) {
+        dispatch(select(isToggleBtn));
     }
-
 
     return (
         <div className="App">
@@ -50,10 +40,10 @@ function App() {
                 <AddField onClickAdd={onAddTask}/>
                 <Filter/>
                 <div className="check-buttons">
-                    <Button onClick={onSelect} disabled={!state.length}>
+                    <Button onClick={() => onSelect(isToggleBtn)} disabled={!tasks.length}>
                         {isToggleBtn ? 'Отметить всё' : 'Снять отметки'}
                     </Button>
-                    <Button onClick={onDelAll} disabled={!state.length}>
+                    <Button onClick={onDelAll} disabled={!tasks.length}>
                         Очистить
                     </Button>
                 </div>

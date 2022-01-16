@@ -11,7 +11,6 @@ export const Item = ({
   completed,
   onClickRemove,
   onClickCheckbox,
-  onClickRemoveTask,
   onClickEdit,
 }) => {
   function onClickRemoveTask() {
